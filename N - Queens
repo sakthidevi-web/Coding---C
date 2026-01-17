@@ -1,0 +1,57 @@
+void backtrack(
+    int row,
+    int n,
+    char ***result,
+    int *returnSize,
+    int *cols,
+    int *diag1,
+    int *diag2,
+    char **board
+) {
+    if (row == n) {
+        result[*returnSize] = (char **)malloc(n * sizeof(char *));
+        for (int i = 0; i < n; i++) {
+            result[*returnSize][i] = strdup(board[i]);
+        }
+        (*returnSize)++;
+        return;
+    }
+
+    for (int col = 0; col < n; col++) {
+        if (cols[col] || diag1[row + col] || diag2[row - col + n - 1])
+            continue;
+
+        board[row][col] = 'Q';
+        cols[col] = diag1[row + col] = diag2[row - col + n - 1] = 1;
+
+        backtrack(row + 1, n, result, returnSize, cols, diag1, diag2, board);
+
+        board[row][col] = '.';
+        cols[col] = diag1[row + col] = diag2[row - col + n - 1] = 0;
+    }
+}
+
+char ***solveNQueens(int n, int *returnSize, int **returnColumnSizes) {
+    char ***result = (char ***)malloc(1000 * sizeof(char **));
+    *returnSize = 0;
+
+    int *cols = (int *)calloc(n, sizeof(int));
+    int *diag1 = (int *)calloc(2 * n, sizeof(int));
+    int *diag2 = (int *)calloc(2 * n, sizeof(int));
+
+    char **board = (char **)malloc(n * sizeof(char *));
+    for (int i = 0; i < n; i++) {
+        board[i] = (char *)malloc((n + 1) * sizeof(char));
+        memset(board[i], '.', n);
+        board[i][n] = '\0';
+    }
+
+    backtrack(0, n, result, returnSize, cols, diag1, diag2, board);
+
+    *returnColumnSizes = (int *)malloc((*returnSize) * sizeof(int));
+    for (int i = 0; i < *returnSize; i++) {
+        (*returnColumnSizes)[i] = n;
+    }
+
+    return result;
+}
