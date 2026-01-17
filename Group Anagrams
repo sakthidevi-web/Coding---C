@@ -1,0 +1,45 @@
+   
+int cmpChar(const void *a, const void *b) {
+    return (*(char *)a - *(char *)b);
+}
+
+char *sortedString(const char *s) {
+    char *t = strdup(s);
+    qsort(t, strlen(t), sizeof(char), cmpChar);
+    return t;
+}
+
+char ***groupAnagrams(char **strs, int strsSize, int *returnSize, int **returnColumnSizes) {
+    char **keys = (char **)malloc(strsSize * sizeof(char *));
+    char ***res = (char ***)malloc(strsSize * sizeof(char **));
+    *returnColumnSizes = (int *)malloc(strsSize * sizeof(int));
+
+    int groups = 0;
+
+    for (int i = 0; i < strsSize; i++) {
+        char *key = sortedString(strs[i]);
+        int found = -1;
+
+        for (int j = 0; j < groups; j++) {
+            if (strcmp(keys[j], key) == 0) {
+                found = j;
+                break;
+            }
+        }
+
+        if (found == -1) {
+            keys[groups] = key;
+            res[groups] = (char **)malloc(strsSize * sizeof(char *));
+            res[groups][0] = strs[i];
+            (*returnColumnSizes)[groups] = 1;
+            groups++;
+        } else {
+            res[found][(*returnColumnSizes)[found]] = strs[i];
+            (*returnColumnSizes)[found]++;
+            free(key);
+        }
+    }
+
+    *returnSize = groups;
+    return res;
+}
