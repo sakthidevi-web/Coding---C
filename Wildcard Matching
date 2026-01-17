@@ -1,0 +1,41 @@
+bool isMatch(char* s, char* p) {
+    int slen = strlen(s);
+    int plen = strlen(p);
+
+    bool **dp = (bool **)malloc((slen + 1) * sizeof(bool *));
+    for (int i = 0; i <= slen; i++) {
+        dp[i] = (bool *)malloc((plen + 1) * sizeof(bool));
+        for (int j = 0; j <= plen; j++) {
+            dp[i][j] = false;
+        }
+    }
+
+    dp[0][0] = true; 
+
+    for (int j = 1; j <= plen; j++) {
+        if (p[j - 1] == '*') {
+            dp[0][j] = dp[0][j - 1];
+        }
+    }
+
+    for (int i = 1; i <= slen; i++) {
+        for (int j = 1; j <= plen; j++) {
+            if (p[j - 1] == '*') {
+                dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
+            } else if (p[j - 1] == '?' || s[i - 1] == p[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = false;
+            }
+        }
+    }
+
+    bool result = dp[slen][plen];
+
+    for (int i = 0; i <= slen; i++) {
+        free(dp[i]);
+    }
+    free(dp);
+
+    return result;
+}
