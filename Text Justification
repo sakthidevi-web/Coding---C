@@ -1,0 +1,64 @@
+void addSpaces(char* line, int count) {
+    for (int i = 0; i < count; i++) {
+        strcat(line, " ");
+    }
+}
+
+char* justifyLine(char** words, int start, int end, int maxWidth, int isLastLine) {
+    int totalChars = 0;
+    for (int i = start; i < end; i++) {
+        totalChars += strlen(words[i]);
+    }
+
+    int numWords = end - start;
+    char* line = (char*)malloc((maxWidth + 1) * sizeof(char));
+    line[0] = '\0';
+
+    if (numWords == 1 || isLastLine) {
+        for (int i = start; i < end; i++) {
+            strcat(line, words[i]);
+            if (i != end - 1) strcat(line, " ");
+        }
+        int remaining = maxWidth - strlen(line);
+        addSpaces(line, remaining);
+    } else {
+        int totalSpaces = maxWidth - totalChars;
+        int spaceBetweenWords = totalSpaces / (numWords - 1);
+        int extraSpaces = totalSpaces % (numWords - 1);
+
+        for (int i = start; i < end; i++) {
+            strcat(line, words[i]);
+            if (i != end - 1) {
+                int spacesToAdd = spaceBetweenWords + (extraSpaces > 0 ? 1 : 0);
+                addSpaces(line, spacesToAdd);
+                if (extraSpaces > 0) extraSpaces--;
+            }
+        }
+    }
+
+    return line;
+  }
+char** fullJustify(char** words, int wordsSize, int maxWidth, int* returnSize) {
+    char** result = (char**)malloc(wordsSize * sizeof(char*));
+    int count = 0;
+    int start = 0;
+
+    while (start < wordsSize) {
+        int len = 0;
+        int end = start;
+
+        while (end < wordsSize && len + strlen(words[end]) + (end - start) <= maxWidth) {
+            len += strlen(words[end]);
+            end++;
+        }
+
+        int isLastLine = (end == wordsSize);
+
+        result[count++] = justifyLine(words, start, end, maxWidth, isLastLine);
+
+        start = end;
+    }
+
+    *returnSize = count;
+    return result;
+}
