@@ -1,0 +1,35 @@
+struct ListNode {
+      int val;
+      struct ListNode *next;
+  };
+ struct ListNode* partition(struct ListNode* head, int x) {
+    struct ListNode* beforeHead = (struct ListNode*)malloc(sizeof(struct ListNode));
+    struct ListNode* afterHead = (struct ListNode*)malloc(sizeof(struct ListNode));
+    
+    beforeHead->next = NULL;
+    afterHead->next = NULL;
+
+    struct ListNode* before = beforeHead;
+    struct ListNode* after = afterHead;
+
+    while (head != NULL) {
+        if (head->val < x) {
+            before->next = head;
+            before = before->next;
+        } else {
+            after->next = head;
+            after = after->next;
+        }
+        head = head->next;
+    }
+
+    after->next = NULL;               
+    before->next = afterHead->next;   
+
+    struct ListNode* result = beforeHead->next;
+
+    free(beforeHead);
+    free(afterHead);
+
+    return result;
+}
