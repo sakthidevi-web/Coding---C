@@ -1,0 +1,38 @@
+void backtrack(int n, int k, int start, int* temp, int tempSize,
+               int** result, int* returnSize) {
+    if (tempSize == k) {
+        result[*returnSize] = (int*)malloc(k * sizeof(int));
+        for (int i = 0; i < k; i++) {
+            result[*returnSize][i] = temp[i];
+        }
+        (*returnSize)++;
+        return;
+    }
+
+    for (int i = start; i <= n; i++) {
+        temp[tempSize] = i;
+        backtrack(n, k, i + 1, temp, tempSize + 1, result, returnSize);
+    }
+}
+
+int** combine(int n, int k, int* returnSize, int** returnColumnSizes) {
+    int maxCombinations = 1;
+    for (int i = 1; i <= k; i++) {
+        maxCombinations = maxCombinations * (n - i + 1) / i;
+    }
+
+    int** result = (int**)malloc(maxCombinations * sizeof(int*));
+    *returnColumnSizes = (int*)malloc(maxCombinations * sizeof(int));
+
+    int* temp = (int*)malloc(k * sizeof(int));
+    *returnSize = 0;
+
+    backtrack(n, k, 1, temp, 0, result, returnSize);
+
+    for (int i = 0; i < *returnSize; i++) {
+        (*returnColumnSizes)[i] = k;
+    }
+
+    free(temp);
+    return result;
+}
