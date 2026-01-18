@@ -1,0 +1,39 @@
+int maximalRectangle(char** matrix, int matrixSize, int* matrixColSize) {
+    if (matrixSize == 0 || matrixColSize[0] == 0)
+        return 0;
+
+    int cols = matrixColSize[0];
+    int* heights = (int*)calloc(cols, sizeof(int));
+    int maxArea = 0;
+
+    for (int i = 0; i < matrixSize; i++) {
+
+        for (int j = 0; j < cols; j++) {
+            if (matrix[i][j] == '1')
+                heights[j] += 1;
+            else
+                heights[j] = 0;
+        }
+
+        int* stack = (int*)malloc((cols + 1) * sizeof(int));
+        int top = -1;
+
+        for (int j = 0; j <= cols; j++) {
+            int currHeight = (j == cols) ? 0 : heights[j];
+
+            while (top != -1 && currHeight < heights[stack[top]]) {
+                int h = heights[stack[top--]];
+                int width = (top == -1) ? j : j - stack[top] - 1;
+                int area = h * width;
+                if (area > maxArea)
+                    maxArea = area;
+            }
+            stack[++top] = j;
+        }
+
+        free(stack);
+    }
+
+    free(heights);
+    return maxArea;
+}
